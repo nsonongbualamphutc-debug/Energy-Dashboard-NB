@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สถานการณ์พลังงานจังหวัดหนองบัวลำภู | Energy Dashboard</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="logo-block">
+      <div class="logo-icon">⚡</div>
+      <div class="logo-text">
+        <h1>ENERGY DASHBOARD</h1>
+        <p>สถานการณ์พลังงานหน่วยงาน จังหวัดหนองบัวลำภู</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="status-chip">
+        <div class="status-dot"></div>
+        <span id="statusText">เชื่อมต่อแล้ว</span>
+      </div>
+      <button class="btn" onclick="openReport()">📋 รายงาน</button>
+      <button class="btn btn-primary" onclick="openForm()">✏️ กรอกข้อมูล</button>
+    </div>
+  </div>
+</div>
+
+<!-- TAB SELECTOR -->
+<div class="tab-selector">
+  <div class="tab-card elec-tab active" data-mode="elec" onclick="switchMode('elec')">
+    <div class="tab-icon">⚡</div>
+    <div class="tab-info">
+      <h3>สถานการณ์ไฟฟ้า</h3>
+      <p>การใช้ไฟฟ้าของหน่วยงานในจังหวัด</p>
+    </div>
+    <div class="tab-badge" id="elecBadge">-</div>
+  </div>
+  <div class="tab-card oil-tab" data-mode="oil" onclick="switchMode('oil')">
+    <div class="tab-icon">⛽</div>
+    <div class="tab-info">
+      <h3>สถานการณ์น้ำมัน</h3>
+      <p>การใช้น้ำมันเชื้อเพลิงของหน่วยงาน</p>
+    </div>
+    <div class="tab-badge" id="oilBadge">-</div>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filters-bar">
+  <div class="filter-group">
+    <label>หน่วยงาน</label>
+    <select id="agencyFilter" onchange="renderAll()">
+      <option value="__ALL__">ภาพรวมจังหวัด (ทั้งหมด)</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>ปีงบประมาณ</label>
+    <select id="yearFilter" onchange="renderAll()"></select>
+  </div>
+  <div class="filter-group">
+    <label>เดือน</label>
+    <select id="monthFilter" onchange="renderAll()">
+      <option value="__ALL__">ทั้งปี</option>
+    </select>
+  </div>
+  <button class="btn" onclick="loadData(true)" style="margin-left:auto;">🔄 รีเฟรช</button>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard">
+  
+  <!-- TECHOMETER -->
+  <div class="card techometer">
+    <div class="techometer-header">
+      <div class="techo-title">TECHOMETER · <span id="techoMode">ENERGY</span></div>
+      <div class="techo-agency" id="techoAgency">ภาพรวมจังหวัด</div>
+    </div>
+    <div class="gauge-wrap">
+      <canvas id="gaugeCanvas" width="420" height="280"></canvas>
+      <div class="gauge-center">
+        <div><span class="gauge-percent" id="gaugePercent">0</span><span class="gauge-percent-sign">%</span></div>
+        <div class="gauge-label">ของมาตรฐาน</div>
+        <div class="gauge-status" id="gaugeStatus">-</div>
+      </div>
+    </div>
+    <div class="techo-stats">
+      <div class="techo-stat">
+        <div class="techo-stat-label">มาตรฐาน</div>
+        <div class="techo-stat-value" id="techoStd">0</div>
+      </div>
+      <div class="techo-stat">
+        <div class="techo-stat-label">ใช้จริง</div>
+        <div class="techo-stat-value" id="techoAct">0</div>
+      </div>
+      <div class="techo-stat">
+        <div class="techo-stat-label">ประหยัด</div>
+        <div class="techo-stat-value" id="techoSave">0</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- KPI CARDS -->
+  <div class="card kpi">
+    <div class="card-title">ใช้จริงรวม</div>
+    <div class="card-subtitle" id="kpiActualSub">ปีปัจจุบัน</div>
+    <div class="kpi-value" id="kpiActual">0<span class="kpi-unit" id="kpiActualUnit">หน่วย</span></div>
+    <div class="kpi-trend" id="kpiActualTrend">—</div>
+  </div>
+  
+  <div class="card kpi">
+    <div class="card-title">มาตรฐานรวม</div>
+    <div class="card-subtitle">เป้าหมายรายปี</div>
+    <div class="kpi-value" id="kpiStd" style="color:var(--text-primary);">0<span class="kpi-unit" id="kpiStdUnit">หน่วย</span></div>
+    <div class="kpi-trend neutral" id="kpiStdTrend">ค่ามาตรฐาน</div>
+  </div>
+  
+  <!-- COMPARISON CHART -->
+  <div class="card chart-card">
+    <div class="card-title">📊 กราฟเปรียบเทียบรายเดือน (3 ปีย้อนหลัง)</div>
+    <div class="card-subtitle">การใช้จริงแต่ละเดือน เทียบระหว่างปี</div>
+    <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+  </div>
+  
+  <!-- STANDARD VS ACTUAL -->
+  <div class="card chart-card half">
+    <div class="card-title">⚖️ มาตรฐาน vs ใช้จริง</div>
+    <div class="card-subtitle">เปรียบเทียบรายเดือน (ปีที่เลือก)</div>
+    <div class="chart-wrap sm"><canvas id="stdVsActChart"></canvas></div>
+  </div>
+  
+  <!-- YOY COMPARISON -->
+  <div class="card chart-card third">
+    <div class="card-title">📈 YoY</div>
+    <div class="card-subtitle">เทียบปีที่แล้ว</div>
+    <div class="chart-wrap sm"><canvas id="yoyChart"></canvas></div>
+  </div>
+  
+  <!-- AGENCY RANKING -->
+  <div class="card chart-card half">
+    <div class="card-title">🏢 หน่วยงานที่ใช้มากสุด (Top 10)</div>
+    <div class="card-subtitle">ในปีที่เลือก</div>
+    <div class="chart-wrap sm"><canvas id="agencyChart"></canvas></div>
+  </div>
+  
+  <!-- RECENT DATA TABLE -->
+  <div class="card chart-card third">
+    <div class="card-title">📋 ข้อมูลล่าสุด</div>
+    <div class="card-subtitle">10 รายการล่าสุด</div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>เดือน</th><th>ใช้จริง</th><th>%</th></tr>
+        </thead>
+        <tbody id="recentTable"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: FORM -->
+<div class="modal-overlay" id="formModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeForm()">✕</button>
+    <h2 id="formTitle">✏️ กรอกข้อมูลสถานการณ์พลังงาน</h2>
+    
+    <!-- LOGIN STEP -->
+    <div id="loginStep">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>รหัสหน่วยงาน</label>
+          <input type="text" id="loginCode" class="form-control" placeholder="เช่น A001 หรือ ADMIN">
+        </div>
+        <div class="form-group full">
+          <label>PIN</label>
+          <input type="password" id="loginPin" class="form-control" placeholder="รหัส PIN" autocomplete="off">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeForm()">ยกเลิก</button>
+        <button class="btn btn-primary" onclick="doLogin()">🔑 เข้าสู่ระบบ</button>
+      </div>
+      <p style="font-size:11px; color:var(--text-muted); margin-top:16px; text-align:center;">
+        หากยังไม่มี PIN ติดต่อผู้ดูแลระบบ (สำนักงานสถิติจังหวัด)
+      </p>
+    </div>
+    
+    <!-- FORM STEP -->
+    <div id="formStep" style="display:none;">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>หน่วยงาน</label>
+          <select id="fAgency" class="form-control"></select>
+        </div>
+        <div class="form-group">
+          <label>ประเภทพลังงาน</label>
+          <select id="fType" class="form-control">
+            <option value="elec">ไฟฟ้า (หน่วย)</option>
+            <option value="oil">น้ำมัน (ลิตร)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>ปีงบประมาณ (พ.ศ.)</label>
+          <select id="fYear" class="form-control"></select>
+        </div>
+        <div class="form-group">
+          <label>เดือน</label>
+          <select id="fMonth" class="form-control"></select>
+        </div>
+        <div class="form-group">
+          <label>ค่ามาตรฐาน</label>
+          <input type="number" step="0.01" id="fStd" class="form-control" placeholder="เช่น 1920.55">
+        </div>
+        <div class="form-group full">
+          <label>ใช้จริง</label>
+          <input type="number" step="0.01" id="fAct" class="form-control" placeholder="เช่น 601">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeForm()">ยกเลิก</button>
+        <button class="btn" onclick="deleteRecord()" style="color:var(--danger);">🗑️ ลบ</button>
+        <button class="btn btn-primary" onclick="saveRecord()">💾 บันทึก</button>
+      </div>
+      <p style="font-size:11px; color:var(--text-muted); margin-top:12px; text-align:center;">
+        หากหน่วยงาน+ปี+เดือน เดียวกันมีอยู่แล้ว ระบบจะอัปเดตข้อมูลเดิม
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST & LOADER -->
+<div class="toast" id="toast"></div>
+<div class="loader" id="loader">
+  <div class="spinner"></div>
+  <div style="color:var(--text-secondary); font-size:14px;" id="loaderText">กำลังโหลดข้อมูล...</div>
+</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
