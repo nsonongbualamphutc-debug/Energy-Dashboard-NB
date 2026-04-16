@@ -1,10 +1,11 @@
 // ==================== CONFIG ====================
 // !!! แทนที่ URL นี้ด้วย Deployment URL ของ Google Apps Script ของคุณ !!!
-const API_URL = "https://script.googleusercontent.com/macros/echo?user_content_key=AWDtjMXtfMppOhogyBCLr5kov1w54LceRzYMOG-brewURaRXgyfU-_-VQ6oOSJ57F4Cre00CknFodWBCWOsztkY0XiApf4joBIO0MQRCSTewgF1CRTvV3O9O6zLXf_9tyLi05mPJtGK_OR2vyE5rpiM_z9cxKqjrvUb1Wmj6CNFQM1R08U3A3KpEcjBNFHymJBBacYn7OVrn99y-OLBVizSTv9sjwbgR_s4XdlbI_hnHYFbQQeieDmgsQ1xCiYw6dHYh_jtLInm0g8gDPsAs5wXjDtM5wAD5kQ&lib=Meb1M-r2U_e2vy-_IntgkAgCWauDT72Yf";
+const API_URL = 'https://script.google.com/macros/s/AKfycbxjmwZROLai5-MXflxsEiCOa5of3-pvyPiTv0vEsq7TO8mTOZB2hDNZrdBJIedgSJTNLg/exec';
 
 const THAI_MONTHS = ['ตุลาคม','พฤศจิกายน','ธันวาคม','มกราคม','กุมภาพันธ์','มีนาคม',
                      'เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน'];
 const MONTH_SHORT = ['ต.ค.','พ.ย.','ธ.ค.','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.'];
+
 
 // STATE
 let mode = 'elec'; // 'elec' | 'oil'
@@ -89,14 +90,23 @@ function normalizeData(res) {
     oil: (res.oil || []).map(mapE).filter(r => r.year),
     agencies: (res.agencies || []).map(a => ({
       code: a['รหัส'] || '',
-      name: (a['ชื่อหน่วยงาน'] || '').trim(),
+      name: (a.name || '').trim(),
       ministry: a['สังกัด'] || '',
       active: (a['สถานะ'] || 'ใช้งาน') === 'ใช้งาน'
     })).filter(a => a.name)
+
+/*
+      code: a.code || '', 
+      name: (a.name || '').trim(),
+      ministry: a.ministry || '',
+      active: a.active === true || a.active === 'ใช้งาน' 
+    })).filter(a => a.name)
+    */
   };
 }
 
 // ==================== SAMPLE DATA ====================
+/*
 function getSampleData() {
   const elec = [];
   const oil = [];
@@ -145,6 +155,7 @@ function getSampleData() {
   
   return { electricity: elec, oil: oil, agencies };
 }
+*/
 
 // ==================== FILTERS ====================
 function populateFilters() {
