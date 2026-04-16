@@ -1,6 +1,6 @@
 // ==================== CONFIG ====================
 // !!! แทนที่ URL นี้ด้วย Deployment URL ของ Google Apps Script ของคุณ !!!
-const API_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+const API_URL = "https://script.googleusercontent.com/macros/echo?user_content_key=AWDtjMXtfMppOhogyBCLr5kov1w54LceRzYMOG-brewURaRXgyfU-_-VQ6oOSJ57F4Cre00CknFodWBCWOsztkY0XiApf4joBIO0MQRCSTewgF1CRTvV3O9O6zLXf_9tyLi05mPJtGK_OR2vyE5rpiM_z9cxKqjrvUb1Wmj6CNFQM1R08U3A3KpEcjBNFHymJBBacYn7OVrn99y-OLBVizSTv9sjwbgR_s4XdlbI_hnHYFbQQeieDmgsQ1xCiYw6dHYh_jtLInm0g8gDPsAs5wXjDtM5wAD5kQ&lib=Meb1M-r2U_e2vy-_IntgkAgCWauDT72Yf";
 
 const THAI_MONTHS = ['ตุลาคม','พฤศจิกายน','ธันวาคม','มกราคม','กุมภาพันธ์','มีนาคม',
                      'เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน'];
@@ -114,11 +114,11 @@ function getSampleData() {
                 2569:[74.40,60.27,60.27,52.94,62.24,0,0,0,0,0,0,0]};
   
   const agencies = [
-    {code:'A001', name:'สำนักงานสถิติจังหวัดหนองบัวลำภู', ministry:'กระทรวงดิจิทัลฯ', active:true},
-    {code:'A002', name:'สำนักงานจังหวัดหนองบัวลำภู', ministry:'กระทรวงมหาดไทย', active:true},
-    {code:'A007', name:'สำนักงานสาธารณสุขจังหวัดหนองบัวลำภู', ministry:'กระทรวงสาธารณสุข', active:true},
-    {code:'A008', name:'สำนักงานเกษตรจังหวัดหนองบัวลำภู', ministry:'กระทรวงเกษตรฯ', active:true},
-    {code:'A024', name:'สำนักงานพลังงานจังหวัดหนองบัวลำภู', ministry:'กระทรวงพลังงาน', active:true}
+    {code:'NBL001', name:'สำนักงานสถิติจังหวัดหนองบัวลำภู', ministry:'กระทรวงดิจิทัลฯ', active:true},
+    {code:'NBL002', name:'สำนักงานจังหวัดหนองบัวลำภู', ministry:'กระทรวงมหาดไทย', active:true},
+    {code:'NBL017', name:'สำนักงานสาธารณสุขจังหวัดหนองบัวลำภู', ministry:'กระทรวงสาธารณสุข', active:true},
+    {code:'NBL018', name:'สำนักงานเกษตรจังหวัดหนองบัวลำภู', ministry:'กระทรวงเกษตรฯ', active:true},
+    {code:'NBL024', name:'สำนักงานพลังงานจังหวัดหนองบัวลำภู', ministry:'กระทรวงพลังงาน', active:true}
   ];
   
   agencies.forEach((ag, idx) => {
