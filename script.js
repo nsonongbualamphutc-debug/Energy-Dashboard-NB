@@ -78,21 +78,30 @@ async function loadData(showLoader = true) {
 function normalizeData(res) {
   // แปลง field names จาก backend ให้เป็น key ที่ JS ใช้
   const mapE = row => ({
+    /*
     agency: row['หน่วยงาน'] || row['รายการ'] || '',
     year: Number(row['ปี'] || row['ไฟฟ้า'] || row['น้ำมัน'] || 0),
     month: String(row['เดือน'] || '').trim(),
     standard: Number(row['ไฟฟ้ามาตรฐาน'] || row['น้ำมันมาตรฐาน'] || 0),
     actual: Number(row['ไฟฟ้าที่ใช้จริง'] || row['น้ำมันที่ใช้จริง'] || 0),
     unit: row['หน่วย'] || ''
+    */
+
+    agency: row.agency || '', 
+    year: Number(row.year || 0),
+    month: String(row.month || '').trim(),
+    standard: Number(row.standard || 0),
+    actual: Number(row.actual || 0),
+    unit: row.unit || ''
   });
   return {
     electricity: (res.electricity || []).map(mapE).filter(r => r.year),
     oil: (res.oil || []).map(mapE).filter(r => r.year),
     agencies: (res.agencies || []).map(a => ({
-      code: a['รหัส'] || '',
+      code: a.code || '',
       name: (a.name || '').trim(),
-      ministry: a['สังกัด'] || '',
-      active: (a['สถานะ'] || 'ใช้งาน') === 'ใช้งาน'
+      ministry: a.ministry || '',
+      active: a.active === true || a.active === 'ใช้งาน'
     })).filter(a => a.name)
 
 /*
