@@ -659,7 +659,7 @@ async function doLogin() {
     return;
   }
 
-  if (API_URL.includes('https://script.google.com/macros/s/AKfycbxjmwZROLai5-MXflxsEiCOa5of3-pvyPiTv0vEsq7TO8mTOZB2hDNZrdBJIedgSJTNLg/exec')) {
+  if (API_URL.includes('YOUR_DEPLOYMENT_ID')) {
     currentUser = { 
       code: code, 
       isAdmin: code === 'ADMIN' 
