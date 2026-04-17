@@ -612,7 +612,7 @@ function openForm() {
 function closeForm() {
   document.getElementById('formModal').classList.remove('active');
 }
-
+/*
 async function doLogin() {
   const code = document.getElementById('loginCode').value.trim();
   const pin = document.getElementById('loginPin').value.trim();
@@ -621,6 +621,49 @@ async function doLogin() {
   if (API_URL.includes('YOUR_DEPLOYMENT_ID')) {
     // Demo mode
     currentUser = { code, isAdmin: code.toUpperCase() === 'ADMIN' };
+    toast('✓ เข้าสู่ระบบ (demo mode)', 'success');
+    showFormStep();
+    return;
+  }
+  
+  toggleLoader(true, 'กำลังตรวจสอบ...');
+  try {
+    const res = await jsonp({ action: 'verify', code, pin });
+    if (res.success) {
+      currentUser = { code: res.code, isAdmin: res.isAdmin };
+      toast('✓ เข้าสู่ระบบสำเร็จ', 'success');
+      showFormStep();
+    } else {
+      toast('❌ ' + (res.error || 'PIN ไม่ถูกต้อง'), 'error');
+    }
+  } catch(e) {
+    toast('❌ ' + e.message, 'error');
+  } finally {
+    toggleLoader(false);
+  }
+}
+  */
+async function doLogin() {
+  const code = document.getElementById('loginCode').value.trim().toUpperCase();
+  const pin = document.getElementById('loginPin').value.trim();
+
+  if (!code || !pin) { 
+    toast('กรอกรหัสหน่วยงานและ PIN', 'error'); 
+    return; 
+  }
+
+  const agencyFound = allData.agencies.find(a => a.code === code);
+  
+  if (!agencyFound && code !== 'ADMIN') {
+    toast('❌ ไม่พบรหัสหน่วยงานนี้ในระบบ (กรุณาใช้ NBLxxx)', 'error');
+    return;
+  }
+
+  if (API_URL.includes('https://script.google.com/macros/s/AKfycbxjmwZROLai5-MXflxsEiCOa5of3-pvyPiTv0vEsq7TO8mTOZB2hDNZrdBJIedgSJTNLg/exec')) {
+    currentUser = { 
+      code: code, 
+      isAdmin: code === 'ADMIN' 
+    };
     toast('✓ เข้าสู่ระบบ (demo mode)', 'success');
     showFormStep();
     return;
