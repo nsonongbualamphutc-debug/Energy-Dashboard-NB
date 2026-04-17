@@ -686,6 +686,16 @@ async function doLogin() {
   }
 }
 
+function backToLogin() {
+  document.getElementById('formStep').style.display = 'none';
+  document.getElementById('loginStep').style.display = 'block';
+
+  document.getElementById('loginCode').value = '';
+  document.getElementById('loginPin').value = '';
+  currentUser = null;
+}
+
+
 function showFormStep() {
   document.getElementById('loginStep').style.display = 'none';
   document.getElementById('formStep').style.display = 'block';
@@ -705,6 +715,24 @@ function showFormStep() {
   // Default: ปีและเดือนปัจจุบัน
   document.getElementById('fType').value = mode;
 }
+/*
+function showFormStep() {
+  document.getElementById('loginStep').style.display = 'none';
+  document.getElementById('formStep').style.display = 'block';
+  
+  const fAgency = document.getElementById('fAgency');
+  
+  if (currentUser) {
+    const agency = allData.agencies.find(a => a.code === currentUser.code);
+    if (agency) {
+      fAgency.value = agency.name;
+    }
+  }
+  fAgency.disabled = false;
+  
+  document.getElementById('fType').value = mode;
+}
+  */
 
 async function saveRecord() {
   const payload = {
