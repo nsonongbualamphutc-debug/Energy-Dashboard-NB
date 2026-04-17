@@ -735,19 +735,39 @@ function showFormStep() {
   */
 
 async function saveRecord() {
+  const stdVal = document.getElementById('fStd').value;
+  const actVal = document.getElementById('fAct').value;
+
+  if (stdVal === "" || actVal === "") {
+    toast('⚠️ กรุณากรอก "ค่ามาตรฐาน" และ "ใช้จริง"', 'error');
+    return;
+  }
+
   const payload = {
     type: document.getElementById('fType').value,
     agency: document.getElementById('fAgency').value,
     year: Number(document.getElementById('fYear').value),
     month: document.getElementById('fMonth').value,
-    standard: Number(document.getElementById('fStd').value),
-    actual: Number(document.getElementById('fAct').value),
+    standard: Number(stdVal),
+    actual: Number(actVal),
     unit: document.getElementById('fType').value === 'elec' ? 'หน่วย' : 'ลิตร',
     user: currentUser?.code || ''
   };
   
-  if (!payload.agency || !payload.month || isNaN(payload.standard) || isNaN(payload.actual)) {
+  if (
+    !payload.agency || 
+    !payload.month || 
+    fStd === '' ||
+    fAct === '' ||
+    isNaN(payload.standard) || 
+    isNaN(payload.actual)
+  ) {
     toast('กรอกข้อมูลให้ครบ', 'error');
+    return;
+  }
+
+  if (payload.standard < 0 || payload.actual < 0) {
+    toast('❌ ค่ามาตรฐานและค่าที่ใช้จริงต้องไม่ติดลบ', 'error');
     return;
   }
   
